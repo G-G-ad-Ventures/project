@@ -1,37 +1,45 @@
 // scripts/deploy.js
 const { ethers } = require('hardhat');
+const hre = require("hardhat");
 
-async function main() {
+
+/*
+  ADD TO LAST STEP TO CALL .START() TO START AUCTION
+*/
+async function hreDeployer() {
+  console.log("using the Hardhat runtime");
   const [deployer] = await ethers.getSigners();
+  console.log("Deploying contracts with the account:", deployer.address);
 
-  console.log('Deploying SingleNFT...');
-  // const SingleNFT = await ethers.getContractFactory('SingleNFT');
-  // const singleNFT = await SingleNFT.deploy("KOLUR", "DOG");
-  // await singleNFT.deployed();
-  const nft = await ethers.deployContract("SingleNFT", ["KOLUr", "DOG"]);
-  await nft.waitForDeployment();
-  // Mint a test token
-  const tokenId = 1337; // Adjust the token ID as needed
-  console.log(`Minting test token with ID ${tokenId}...`);
-  await nft.mint(deployer.address, tokenId);
+  const nft = await hre.ethers.getContractFactory("SingleNFT");
 
-  console.log('Test token minted.');
-  
-  console.log('Deploying Auction...');
-  const auction = await ethers.deployContract('EnglishAuction', [nft.target, tokenId, 1000]);
-  await auction.waitForDeployment();
+  const contract = await nft.deploy("Gullihaha", "HAHA");
+  await contract.waitForDeployment();
+  // mint nft 5 times
+  for(let i = 0; i < 5; i++) {
+    const mintTx = await contract.connect(deployer).mint(deployer.address);
+    const respone = await mintTx.wait();
+    console.log("mint tx", mintTx)
+    console.log("wait res", respone)
+  }
 
-  console.log("Get auction contract approved to transfer NFT");
+  const auction = await hre.ethers.getContractFactory("EnglishAuction");
+  // auction off one of the 5 nfts minted picking randomly nft id = 2
+  // at starting bid 100
+  const auctionContract = await auction.deploy(deployer, 2, 100);
+  await auctionContract.waitForDeployment();
 
-  await nft.approve(auction.target, tokenId);
+  console.log("auciton contract address: ", auctionContract.target);
+  console.log("Get auction contracct approved to transfer nft");
+  await contract.approve(deployer, 2);
 
   console.log("ready to take bids");
-  console.log('Contracts deployed:');
-  console.log('ERC721:', nft.target);
-  console.log('Auction:', auction.target);
+  // console.log('Contracts deployed:');
+  // console.log('ERC721:', nft.target);
+  // console.log('Auction:', auction.target);
 }
 
-main()
+hreDeployer()
   .then(() => process.exit(0))
   .catch((error) => {
     console.error(error);

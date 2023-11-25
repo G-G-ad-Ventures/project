@@ -7,7 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "codegen": "pnpm run codegen-management && pnpm run codegen-client",
+    "codegen-management": "graphql-codegen --require dotenv/config --config graphql.config.ts --verbose --project=management",
+    "codegen-client": "graphql-codegen --require dotenv/config --config graphql.config.ts --verbose --project=client"
   },
   "keywords": [],
   "author": "",
@@ -16,16 +18,22 @@
     "@apollo/client": "^3.8.7",
     "@bastaai/basta-admin-js": "^0.1.0-beta.104",
     "@bastaai/basta-js": "^0.1.0-beta.94",
+    "@graphql-codegen/client-preset": "^4.1.0",
+    "@graphql-codegen/typescript-operations": "4.0.1",
     "@openzeppelin/contracts": "^5.0.0",
     "@types/dotenv": "^8.2.0",
     "axios": "^1.6.2",
     "cross-fetch": "^4.0.0",
-    "graphql": "^16.8.1"
+    "graphql": "^16.8.1",
+    "graphql-config": "^5.0.3",
+    "graphql-ws": "^5.14.2"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.0",
     "@types/node": "^20.9.0",
     "dotenv": "^16.3.1",
     "hardhat": "^2.19.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
   }
 }

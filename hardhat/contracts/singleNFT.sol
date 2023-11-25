@@ -4,14 +4,18 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SingleNFT is ERC721, Ownable {
-    constructor(string memory nftName, string memory nftId) 
-        ERC721(nftName, nftId) 
+    uint256 private _tokenIdCounter;
+
+    constructor(string memory _nftName, string memory _symbol) 
+        ERC721(_nftName, _symbol) 
         Ownable(msg.sender) {}
-    function mint(address to, uint256 tokenId) public onlyOwner {
-        super._mint(to, tokenId);
+    function mint(address to) public onlyOwner returns(uint256) {
+        uint256 tokenId = _tokenIdCounter++;
+        _mint(to, tokenId);
+        return tokenId;
     }
 
     function approve(address to, uint256 tokenId) public override {
-        super._approve(to, tokenId, super._msgSender());
+        _approve(to, tokenId, super._msgSender());
     }
 }
